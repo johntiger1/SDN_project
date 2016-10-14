@@ -38,6 +38,7 @@ class trace_handler():
 				# skip those pkts
 				isFound = pattern.search(pkt.info)
 				if isFound  == None:
+					print pkt.info
 					continue
 				ports = pattern.search(pkt.info).group(0)
 				ports = ports.split("\\xe2\\x86\\x92")
@@ -77,19 +78,25 @@ class trace_handler():
 						last_time = pkt_time
 						flow_start_time = pkt_time
 						flow_size = pkt_length
+						flow_duration = 0
 						i += 1
 					else:
 						delta_time = pkt_time - last_time
 						assert (delta_time >= 0)
-						if delta_time <= self.threshold:
-							flow_duration = pkt_time - flow_start_time
-							flow_size += pkt_length
-						else:
+						if delta_time > self.threshold:
 							writer.writerow({'source_ip':addrs[0],'destination_ip':addrs[2],'source_port':addrs[1], 'destination_port':addrs[3],'init_time':flow_start_time,'size':flow_size,'duration':flow_duration})
 							f.flush()
-
+							last_time = pkt_time
 							#reset default values
 							flow_start_time = pkt_time
 							flow_duration = 0
 							flow_size = pkt_length
-						last_time = pkt_time
+						elif pkt == res[k][len(res[k])-1]:
+							flow_duration = pkt_time - flow_start_time
+							flow_size += pkt_length
+							writer.writerow({'source_ip':addrs[0],'destination_ip':addrs[2],'source_port':addrs[1], 'destination_port':addrs[3],'init_time':flow_start_time,'size':flow_size,'duration':flow_duration})
+							f.flush()
+						else:							
+							last_time = pkt_time
+							flow_duration = pkt_time - flow_start_time
+							flow_size += pkt_length
