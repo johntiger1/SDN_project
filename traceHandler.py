@@ -87,6 +87,9 @@ class trace_handler():
 						else:
 							writer.writerow({'source_ip':addrs[0],'destination_ip':addrs[2],'source_port':addrs[1], 'destination_port':addrs[3],'init_time':flow_start_time,'size':flow_size,'duration':flow_duration})
 							f.flush()
-							last_time = pkt_time
+
+							#reset default values
 							flow_start_time = pkt_time
+							flow_duration = 0
 							flow_size = pkt_length
+						last_time = pkt_time
