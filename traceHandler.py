@@ -38,7 +38,6 @@ class trace_handler():
 				# skip those pkts
 				isFound = pattern.search(pkt.info)
 				if isFound  == None:
-					print pkt.info
 					continue
 				ports = pattern.search(pkt.info).group(0)
 				ports = ports.split("\\xe2\\x86\\x92")
@@ -64,25 +63,26 @@ class trace_handler():
 			writer.writeheader()
 
 			for k in res.keys():
-				i = 0
-				flow_start_time = None
-				last_time = None
+				flow_start_time = float(res[k][0]['pkt_time'])
+				last_time = float(res[k][0]['pkt_time'])
 				flow_duration = 0
 				flow_size = 0
 				addrs = k.split('_')
-
+				pkt_counts = len(res[k])
+				new_flow = True
+				count = 0
 				for pkt in res[k]:
+					if addrs[0] == "41.177.117.184" and addrs[1] == "1618" and addrs[3] == "51332" and addrs[2] == "41.177.3.224":
+						print pkt['pkt_len']," ", pkt['pkt_time']
+						import pdb;pdb.set_trace()
+					else:
+						continue
 					pkt_time = float(pkt['pkt_time'])	
 					pkt_length = int(pkt['pkt_len'])
-					if i == 0:
-						last_time = pkt_time
-						flow_start_time = pkt_time
-						flow_size = pkt_length
-						flow_duration = 0
-						i += 1
-					else:
-						delta_time = pkt_time - last_time
-						assert (delta_time >= 0)
+					delta_time = pkt_time - last_time
+					assert (delta_time >= 0)
+					if count < pkt_counts-1:
+
 						if delta_time > self.threshold:
 							writer.writerow({'source_ip':addrs[0],'destination_ip':addrs[2],'source_port':addrs[1], 'destination_port':addrs[3],'init_time':flow_start_time,'size':flow_size,'duration':flow_duration})
 							f.flush()
@@ -91,12 +91,21 @@ class trace_handler():
 							flow_start_time = pkt_time
 							flow_duration = 0
 							flow_size = pkt_length
-						elif pkt == res[k][len(res[k])-1]:
-							flow_duration = pkt_time - flow_start_time
-							flow_size += pkt_length
-							writer.writerow({'source_ip':addrs[0],'destination_ip':addrs[2],'source_port':addrs[1], 'destination_port':addrs[3],'init_time':flow_start_time,'size':flow_size,'duration':flow_duration})
-							f.flush()
-						else:							
+						else:
 							last_time = pkt_time
 							flow_duration = pkt_time - flow_start_time
 							flow_size += pkt_length
+					else:
+						if delta_time > self.threshold:
+							writer.writerow({'source_ip':addrs[0],'destination_ip':addrs[2],'source_port':addrs[1], 'destination_port':addrs[3],'init_time':flow_start_time,'size':flow_size,'duration':flow_duration})
+							f.flush()
+							last_time = pkt_time
+							flow_duration = 0
+							flow_start_time = pkt_time
+							flow_size = pkt_length
+						else:
+							flow_duration = pkt_time - flow_start_time
+							flow_size += pkt_length
+						writer.writerow({'source_ip':addrs[0],'destination_ip':addrs[2],'source_port':addrs[1], 'destination_port':addrs[3],'init_time':flow_start_time,'size':flow_size,'duration':flow_duration})
+						f.flush()
+					count += 1
