@@ -1,6 +1,6 @@
-  # SDN_project
+# SDN_project
 
-## process raw data
+## Process raw data (Data Clean)
 ### ./get_stats_data.py
     (Please modify your paths to files inside of this program)
     To process raw wireshark data into pure statistic data, which can speed up process a lot, into format like:
@@ -14,7 +14,7 @@ In this program, start_time for each wireshark packets files are extracted in ti
 
        Then concatenate porcessed .csv data into one input.csv file
        Take "number_of_files" as the number of files to concatenate
-
+## Get flows (Analysis usage)
 ### ./final_process.py input.csv output.csv threshold number_of_files
     Take 4 args: input, output, threshold, number_of_files
 
