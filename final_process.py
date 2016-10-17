@@ -1,14 +1,30 @@
+#!/usr/local/bin/python
 import csv
 import operator
 import sys
+import argparse
 
-THRESHOLD = 0.4
+'''
+parameters to modify
+'''
+#THRESHOLD = 0.4
 number_of_files = 1
-input_file_name = "unique_flows.csv"
+#input_file_name = "unique_flows.csv"
 #"new_univ1_pt1_flow_key_time_points.csv"
 #"unique_flows.csv"
-output_file_name = "final_total_flows_01.csv"
+#output_file_name = "final_total_flows_01.csv"
 
+parser = argparse.ArgumentParser()
+parser.add_argument("input")
+parser.add_argument("output")
+parser.add_argument("threshold")
+parser.add_argument("pkt_file_number")
+args = parser.parse_args()
+
+input_file_name = args.input
+output_file_name = args.output
+THRESHOLD = float(args.threshold)
+number_of_files = int(args.pkt_file_number)
 csv.field_size_limit(sys.maxsize)
 reader = csv.reader(open(input_file_name), delimiter=";")
 #reader = csv.reader(open("unique_flows.csv"), delimiter=";")
@@ -19,8 +35,7 @@ sortedlist = sorted(reader, key=operator.itemgetter(0), reverse=True)
 new_sortedlist = []
 
 sortedlist = sortedlist[number_of_files:]
-print sortedlist[0]
-exit()
+
 # sortedlist is the sorted sub_flows across files after removed first 20 headers
 #print len(sortedlist)
 #cur_list[0-2]:key, size_list_str, time_list_str

@@ -5,7 +5,6 @@ import os, sys
 i = 1
 trace_file = os.path.expanduser('~')+'/Downloads/univ1_trace/univ1_pt'
 
-TIME_THRESHOLD = 0.1
 th = trace_handler(TIME_THRESHOLD)
 stamps_list = th.get_timestamp_list()
 
