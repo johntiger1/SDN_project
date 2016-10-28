@@ -4,11 +4,19 @@ import sys
 import operator
 FLOW_FILE = "Univ1_flows_at_01.csv"
 GROUP_SIZE = 30
-
+DURATION = 0.3
 csv.field_size_limit(sys.maxsize)
 reader = csv.reader(open(FLOW_FILE), delimiter=";")
+
+output_file = "bandwidth.csv"
 #import pdb;pdb.set_trace()
 reader = list(reader)[1:]
+f = open(output_file, 'w')
+header = ['key','time']
+header += [i for i in range(0,30)]
+print header
+writer = csv.DictWriter(f, header)
+writer.writeheader()
 
 cur_src_ip = None # since sorted format: srcip_srcport_desip_desport, so can only processed by srcip
 cur_time = None
@@ -54,11 +62,55 @@ def re_aggr(ready_list, src_ip_key):
 		pair_ip_flows = [ready_list[i]]
 
 def calc_bw(pair_ip_flows, src_ip_key, cur_des_ip):# calc per ip_pair
-	pass
+	n = 0
+	# pair_ip_flows: [["ip_ip_port_port", init_time, duration, size],...]
+	count = 0
+	s_key = src_ip_key + "_" + cur_des_ip
+	keys = []
+	#results = []
+	for _ in pair_ip_flows:
+		_[1] = float(_[1])
 
-	# check init time order
+	pair_ip_flows = sorted(pair_ip_flows, key = operator.itemgetter(1))
+	for _ in pair_ip_flows:
+		print _
+	for i in range(0,30):
+		keys.append(i)
+	#import pdb;pdb.set_trace()
+	buckets = dict.fromkeys(keys,0)
+
+	cur_time = pair_ip_flows[0][1]
+	for i in range(0, len(pair_ip_flows)):
+		flow = pair_ip_flows[i]
+		flow_time = flow[1]
+		flow_size = int(flow[3])
+
+		if flow_time <= (cur_time + DURATION) and i < (len(pair_ip_flows)-1):
+			#import pdb;pdb.set_trace()
+			addrs = flow[0].split("_")
+			src_port = int(addrs[2])
+			des_port = int(addrs[3])
+			k = get_key(src_port, des_port)
+			buckets[k] += flow_size
+			continue
+		# write into file:
+		dur = DURATION + n*DURATION
+		row = buckets
+		row.update({'key':s_key, 'time':dur})
+		print row
+		writer.writerow(row)
+		n += 1
+		#initialize
+		cur_time += DURATION
+		buckets = dict.fromkeys(keys,0)
+		addrs = flow[0].split("_")
+		src_port = int(addrs[2])
+		des_port = int(addrs[3])
+		k = get_key(src_port, des_port)
+		buckets[k] += flow_size
+# check init time order
 	for i in range(0, len(pair_ip_flows)-1):
-		assert pair_ip_flows[i+1] >= pair_ip_flows[i]
+		assert pair_ip_flows[i+1][1] >= pair_ip_flows[i][1]
 	exit()
 
 	
