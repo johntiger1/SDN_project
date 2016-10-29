@@ -29,12 +29,14 @@ class trace_handler():
 		#print cap[0]
 		return cap
 
-	def get_timestamp_list(self):
+	def get_timestamp_list(self, PIECE_NUMBER, trace_file):
+		import pdb;pdb.set_trace()
+		print PIECE_NUMBER
 		init_timestamps_list = []
-		i = 1
-		trace_file = os.path.expanduser('~')+'/Downloads/univ1_trace/univ1_pt'
+		i = 0
+		#trace_file = os.path.expanduser('~')+'/Downloads/univ2_trace/univ2_pt'
 		#TIME_THRESHOLD = 0.1
-		while i<=20:
+		while i<=PIECE_NUMBER:
 			path = trace_file+str(i) 
 			cap = pyshark.FileCapture(path)
 			for pkt in cap:

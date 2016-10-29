@@ -2,13 +2,15 @@
 
 from StatsGenerator import trace_handler
 import os, sys
-i = 1
-trace_file = os.path.expanduser('~')+'/Downloads/univ1_trace/univ1_pt'
+i = 0
+PIECE_NUMBER = 8
+TIME_THRESHOLD = 0
+trace_file = 'univ2_trace/univ2_pt'
 
 th = trace_handler(TIME_THRESHOLD)
-stamps_list = th.get_timestamp_list()
+stamps_list = th.get_timestamp_list(PIECE_NUMBER, trace_file)
 
-while i<=20:
+while i<=PIECE_NUMBER:
 	path = trace_file+str(i) 
 	
 	th.set_number_file(i)

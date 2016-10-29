@@ -2,7 +2,7 @@ import pyshark
 import os
 import sys
 
-file_path_stub = os.path.expanduser('~')+'/Downloads/univ1_trace/univ1_pt'
+file_path_stub = 'univ1_trace/univ1_pt'
 i = 1
 set ip_set = set()
 while (i<=20):
