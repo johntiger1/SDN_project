@@ -2,13 +2,21 @@
 import csv
 import sys
 import operator
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("gn")
+parser.add_argument("op")
+
+args = parser.parse_args()
+
 FLOW_FILE = "Univ1_flows_at_01.csv"
-GROUP_SIZE = 4
+GROUP_SIZE = int(args.gn)
 DURATION = 0.3
 csv.field_size_limit(sys.maxsize)
 reader = csv.reader(open(FLOW_FILE), delimiter=";")
 
-output_file = "bandwidth.csv"
+output_file = args.op
 #import pdb;pdb.set_trace()
 reader = list(reader)[1:]
 f = open(output_file, 'w')
@@ -29,6 +37,8 @@ def get_key(src_port, des_port):
 	return (src_port ^ des_port) % GROUP_SIZE
 
 def re_aggr(ready_list, src_ip_key):
+	#print len(ready_list)
+	#print src_ip_key
 	for flow in ready_list:
 		flow_key_list = flow[0].split("_")
 		src_ip = flow_key_list[0]		
@@ -52,23 +62,27 @@ def re_aggr(ready_list, src_ip_key):
 
 		if des_ip == cur_des_ip and i != len(ready_list)-1: # gather all flows with the same src_ip
 			pair_ip_flows.append(ready_list[i])
-			continue	
-		try:
-			calc_bw(pair_ip_flows, src_ip_key, cur_des_ip)
-		except IndexError:
 			continue
+		if i == len(ready_list)-1:
+			if des_ip == cur_des_ip:
+				pair_ip_flows.append(ready_list[i])
+				calc_bw(pair_ip_flows, src_ip_key, cur_des_ip)
+				break
+		calc_bw(pair_ip_flows, src_ip_key, cur_des_ip)
 
 		#initalize pre_process_flows list for the next src ip
 		cur_des_ip = des_ip
-		print cur_des_ip
+		print src_ip_key, "-", cur_des_ip
 		pair_ip_flows = [ready_list[i]]
 
+
 def calc_bw(pair_ip_flows, src_ip_key, cur_des_ip):# calc per ip_pair
+	#import pdb;pdb.set_trace()
 	n = 0
 	# pair_ip_flows: [["ip_ip_port_port", init_time, duration, size],...]
 	count = 0
 	s_key = src_ip_key + "_" + cur_des_ip
-	#print len(pair_ip_flows)
+
 	keys = []
 	#results = []
 	for _ in pair_ip_flows:
@@ -79,16 +93,16 @@ def calc_bw(pair_ip_flows, src_ip_key, cur_des_ip):# calc per ip_pair
 		keys.append(i)
 	#import pdb;pdb.set_trace()
 	buckets = dict.fromkeys(keys,0)
-	#import pdb;pdb.set_trace()
+	
 	#print pair_ip_flows
 	cur_time = pair_ip_flows[0][1]
 	s_time = pair_ip_flows[0][1] + DURATION
 	for i in range(0, len(pair_ip_flows)):
+		#print "current i: " + str(i)
 		flow = pair_ip_flows[i]
 		flow_time = flow[1]
 		flow_size = int(flow[3])
-
-		if i < (len(pair_ip_flows)-1):
+		if i != (len(pair_ip_flows)-1):
 			if flow_time <= s_time: 
 				#import pdb;pdb.set_trace()
 				addrs = flow[0].split("_")
@@ -130,6 +144,10 @@ def calc_bw(pair_ip_flows, src_ip_key, cur_des_ip):# calc per ip_pair
 				#print "flow %s added." % i
 			else:
 				dur = DURATION + n*DURATION
+				row = buckets
+				row.update({'key':s_key, 'time':dur})
+				#print row
+				writer.writerow(row)
 				s_time = cur_time + DURATION + n*DURATION
 				while(flow_time > s_time):
 					n += 1
@@ -145,7 +163,6 @@ def calc_bw(pair_ip_flows, src_ip_key, cur_des_ip):# calc per ip_pair
 			row.update({'key':s_key, 'time':dur})
 			#print row
 			writer.writerow(row)
-				
 				 
 		# write into file:
 		
