@@ -8,6 +8,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("gn")
 parser.add_argument("op")
 
+ip_set = set(["41.177.26.15_244.3.90.67", "46.214.46.41_41.177.26.176", "67.91.230.210_41.177.98.57", "95.95.254.3_244.3.210.197", "244.3.67.108_41.177.98.176"])
+
 args = parser.parse_args()
 
 FLOW_FILE = "Univ1_flows_at_01.csv"
@@ -16,7 +18,7 @@ DURATION = 0.3
 csv.field_size_limit(sys.maxsize)
 reader = csv.reader(open(FLOW_FILE), delimiter=";")
 
-output_file = args.op
+output_file = "temp"+args.op
 #import pdb;pdb.set_trace()
 reader = list(reader)[1:]
 f = open(output_file, 'w')
@@ -59,6 +61,8 @@ def re_aggr(ready_list, src_ip_key):
 		des_ip = flow_key_list[1]
 		src_port = flow_key_list[2]
 		des_port = flow_key_list[3]
+		if src_ip + "_" + des_ip not in ip_set:
+			continue
 
 		if des_ip == cur_des_ip and i != len(ready_list)-1: # gather all flows with the same src_ip
 			pair_ip_flows.append(ready_list[i])
@@ -68,12 +72,15 @@ def re_aggr(ready_list, src_ip_key):
 				pair_ip_flows.append(ready_list[i])
 				calc_bw(pair_ip_flows, src_ip_key, cur_des_ip)
 				break
-		calc_bw(pair_ip_flows, src_ip_key, cur_des_ip)
+		try:
+			calc_bw(pair_ip_flows, src_ip_key, cur_des_ip)
 
-		#initalize pre_process_flows list for the next src ip
-		cur_des_ip = des_ip
-		print src_ip_key, "-", cur_des_ip
-		pair_ip_flows = [ready_list[i]]
+			#initalize pre_process_flows list for the next src ip
+			cur_des_ip = des_ip
+			print src_ip_key, "-", cur_des_ip
+			pair_ip_flows = [ready_list[i]]
+		except:
+			pass
 
 
 def calc_bw(pair_ip_flows, src_ip_key, cur_des_ip):# calc per ip_pair

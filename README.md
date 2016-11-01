@@ -22,3 +22,13 @@ Take 4 args:
      input, output, threshold, number_of_files
 
     Will print out the # of unique flows & the # of flows under the specified threshold.
+
+## Flow Aggregation (preparation for assigning to paths)
+### ./bw_calc.py #_of_groups output_file_name
+
+Take 2 args:
+     
+     #_of_groups: how many groups to assign flows per src_des_ip pair
+     output_file_name: output csv file
+
+     Will assign flows by unit of ip pair to differnt groups for decision and further determination of assigning to paths. (Analysis Phase)
