@@ -32,3 +32,13 @@ Take 2 args:
      output_file_name: output csv file
 
      Will assign flows by unit of ip pair to differnt groups for decision and further determination of assigning to paths. (Analysis Phase)
+
+## Intraflow Simulation (generate flows under Possion Distribution)
+### master.py mapping_serverNumber_to_ip flowDataMining1.mat flowDataMining2.mat ... (have to provide mapping file and at least one silulated flow file)
+
+Input: simulated flows among all servers
+output: 16 files of each for 1 server, assigned by strat server
+
+random assigned source ports(10000, 10099) and destination ports(11000,11099)
+
+ 
