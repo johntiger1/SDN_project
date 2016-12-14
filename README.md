@@ -41,4 +41,4 @@ output: 16 files of each for 1 server, assigned by strat server
 
 random assigned source ports(10000, 10099) and destination ports(11000,11099)
 
- 
+sort by starttime: sort -k1 -n -t, filename in bash
