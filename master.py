@@ -47,9 +47,15 @@ try:
 			destPort = randrange(11000,11099) 
 			writer = writers[srcServer-1]
 			#header = ['start_time', 'src_ip', 'src_port', 'dest_ip', 'dest_port', 'size']
-			writer.writerow({'start_time':startTime,'src_ip':srcIP, 'src_port':srcPort, 'dest_ip':destIP, 'dest_port':destPort, 'size':sz})
-
-		
+			writer.writerow({'start_time':startTime,'src_ip':srcIP, 'src_port':srcPort, 'dest_ip':destIP, 'dest_port':destPort, 'size':sz})		
 finally:
 	for f in fopens:
 		f.close()
+
+import subprocess
+for i in range(1,17):
+	subprocess.call(["sort", "-o", "server"+str(i)+".csv", "-k1", "-n", "-t,", "server"+str(i)+".csv"])
+
+
+
+
