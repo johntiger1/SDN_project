@@ -34,11 +34,12 @@ Take 2 args:
      Will assign flows by unit of ip pair to differnt groups for decision and further determination of assigning to paths. (Analysis Phase)
 
 ## Intraflow Simulation (generate flows under Possion Distribution)
-### master.py mapping_serverNumber_to_ip flowDataMining1.mat flowDataMining2.mat ... (have to provide mapping file and at least one silulated flow file)
+### master.py
 
+Instruction: master.py mapping_serverNumber_to_ip flowDataMining1.mat flowDataMining2.mat ... (have to provide mapping file and at least one silulated flow file)
 Input: simulated flows among all servers
 output: 16 files of each for 1 server, assigned by strat server
 
 random assigned source ports(10000, 10099) and destination ports(11000,11099)
 
-sort by starttime: sort -k1 -n -t, filename in bash
+sort by starttime: sort -o filename -k1 -n -t, filename in bash (already aggregated in script)
