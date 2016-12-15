@@ -14,8 +14,8 @@ def getNumToIpMapping(filename):
 def getFileList(fileList):
 	return  fileList
 
-# srcPort = randrange(10000,10099)
-# desPort = randrange(11000,11099)
+# srcPort = randrange(10000,10199) # increase to 200
+# desPort = randrange(11000,11199) # increase to 200
 mapping = getNumToIpMapping(sys.argv[1])
 files = getFileList([sys.argv[i] for i in range(2, len(sys.argv))])
 try:
@@ -43,8 +43,8 @@ try:
 			destServer = destServers.item(i)
 			destIP = destServer #desIP = mapping[desServer]
 			startTime = startTimes.item(i)
-			srcPort = randrange(10000,10099)
-			destPort = randrange(11000,11099) 
+			srcPort = randrange(10000,10199)
+			destPort = randrange(11000,11199) 
 			writer = writers[srcServer-1]
 			#header = ['start_time', 'src_ip', 'src_port', 'dest_ip', 'dest_port', 'size']
 			writer.writerow({'start_time':startTime,'src_ip':srcIP, 'src_port':srcPort, 'dest_ip':destIP, 'dest_port':destPort, 'size':sz})		
