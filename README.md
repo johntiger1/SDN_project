@@ -41,5 +41,3 @@ Input: simulated flows among all servers
 output: 16 files of each for 1 server, assigned by strat server
 
 random assigned source ports(10000, 10199) and destination ports(11000,11199)
-
-sort by starttime: sort -o filename -k1 -n -t, filename in bash (already aggregated in script)
