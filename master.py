@@ -22,8 +22,6 @@ def getNumToIpMapping(filename):
 def getFileList(fileList):
 	return  fileList
 
-# srcPort = randrange(10000,10199) # increase to 200
-# desPort = randrange(11000,11199) # increase to 200
 mapping = getNumToIpMapping(sys.argv[1])
 files = getFileList([sys.argv[i] for i in range(2, len(sys.argv))])
 try:
